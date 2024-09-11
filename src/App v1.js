@@ -34,17 +34,19 @@ function formatDay(dateStr) {
 
 
 export default class App extends Component {
-  state = {
-    location: '',
-    isLoding: false,
-    displayLocation: "",
-    weather: {},
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      location: 'lisbon',
+      isLoding: false,
+      displayLocation: "",
+      weather: {},
+    }
+    this.fetchWeather = this.fetchWeather.bind(this)
   }
 
-
-  // async fetchWeather() {
-  fetchWeather = async () => {
-    if (this.state.location.length < 2) return this.setState({ weather: {} });
+  async fetchWeather() {
     try {
       this.setState({ isLoding: true })
 
@@ -74,37 +76,16 @@ export default class App extends Component {
 
     }
   }
-
-  setLocation = (e) => this.setState({ location: e.target.value });
-
-  // useEffect []
-  componentDidMount() {
-    // this.fetchWeather();
-
-    this.setState({ location: localStorage.getItem("location") || "" });
-  }
-
-
-  // useEffect [location]
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.location !== prevState.location) {
-      this.fetchWeather();
-
-      localStorage.setItem("location", this.state.location);
-    }
-  }
-
   render() {
     return (
       <div className='app'>
         <h1>Classy weather</h1>
         <div>
-          <Input
-            location={this.state.location}
-            onChangeLocation={this.setLocation}
-          />
+          <input type="text" placeholder='Search From Location...'
+            value={this.state.location}
+            onChange={(e) => this.setState({ location: e.target.value })} />
         </div>
-
+        <button onClick={this.fetchWeather}>Get Weather</button>
         {this.state.isLoding && <p className='loader'>Loding...</p>}
         {this.state.weather.weathercode && (<Weather
           weather={this.state.weather}
@@ -112,21 +93,6 @@ export default class App extends Component {
         />)}
       </div>
     )
-  }
-}
-
-class Input extends React.Component {
-  render() {
-    return (
-      <div>
-        <input
-          type="text"
-          placeholder="Search from location..."
-          value={this.props.location}
-          onChange={this.props.onChangeLocation}
-        />
-      </div>
-    );
   }
 }
 
